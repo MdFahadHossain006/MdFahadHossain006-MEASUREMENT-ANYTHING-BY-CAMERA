@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>AI Measure Pro - Smart Measurement System</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #000000 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Glass morphism effect with dark theme */
+        .glass {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Developer Banner */
+        .developer-banner {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.9));
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 2px solid #000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .developer-banner h2 {
+            color: #000;
+            font-size: 1.2em;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        .developer-banner span {
+            font-weight: bold;
+            background: rgba(0,0,0,0.1);
+            padding: 5px 15px;
+            border-radius: 50px;
+            display: inline-block;
+            color: #000;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Camera Section */
+        .camera-section {
+            padding: 20px;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            background: #000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        video, canvas {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: crosshair;
+        }
+
+        /* Controls */
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            background: #000;
+            color: white;
+            border: 1px solid #333;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #333;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background: #000;
+            color: white;
+            border: 2px solid #000;
+        }
+
+        .btn-success {
+            background: #2c3e50;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #c0392b;
+            color: white;
+        }
+
+        .btn-info {
+            background: #2980b9;
+            color: white;
+        }
+
+        /* Results Section */
+        .results-section {
+            padding: 20px;
+        }
+
+        .measure-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 2px solid #000;
+        }
+
+        .measure-value {
+            font-size: 56px;
+            font-weight: bold;
+            color: #000;
+            margin: 15px 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .measure-label {
+            color: #000;
+            font-size: 14px;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        .info-panel {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid #000;
+        }
+
+        .info-panel label {
+            color: #000;
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .info-panel input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: 2px solid #000;
+            background: white;
+            color: #000;
+            font-size: 16px;
+        }
+
+        .info-panel input::placeholder {
+            color: #666;
+        }
+
+        .status {
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 15px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+            backdrop-filter: blur(10px);
+        }
+
+        .status.success {
+            background: rgba(46, 204, 113, 0.9);
+            color: #000;
+            display: block;
+            border: 1px solid #000;
+        }
+
+        .status.error {
+            background: rgba(231, 76, 60, 0.9);
+            color: #000;
+            display: block;
+            border: 1px solid #000;
+        }
+
+        .status.info {
+            background: rgba(52, 152, 219, 0.9);
+            color: #000;
+            display: block;
+            border: 1px solid #000;
+        }
+
+        /* Social & Download Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .social-btn, .download-btn {
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            border: 2px solid #000;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .facebook-btn {
+            background: #1877f2;
+            color: white;
+        }
+
+        .instagram-btn {
+            background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d);
+            color: white;
+        }
+
+        .github-btn {
+            background: #333;
+            color: white;
+        }
+
+        .download-btn {
+            background: #000;
+            color: white;
+        }
+
+        .social-btn:hover, .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        /* Steps Guide */
+        .steps-guide {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .step-item {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            border: 1px solid #000;
+        }
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+            background: #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .step-text {
+            color: #000;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        /* Contract Section */
+        .contract-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .contract-btn {
+            background: #000;
+            color: white;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .contract-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        /* Social Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            animation: slideIn 0.3s;
+            border: 3px solid #000;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-content h2 {
+            color: #000;
+            margin-bottom: 20px;
+        }
+
+        .modal-social-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .close {
+            color: #000;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #666;
+        }
+
+        /* PDF Content Styles */
+        .pdf-content {
+            padding: 20px;
+            background: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .pdf-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #000;
+        }
+
+        .pdf-header h1 {
+            color: #000;
+        }
+
+        .pdf-measurement {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            border: 1px solid #000;
+        }
+
+        .pdf-image {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .pdf-image img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border: 1px solid #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Developer Banner -->
+        <div class="developer-banner glass">
+            <h2>✨ THIS WEBSITE IS DEVELOPED BY - <span>MD. FAHAD HOSSAIN</span> ✨</h2>
+        </div>
+
+        <div class="main-content">
+            <!-- Left Side - Camera -->
+            <div class="camera-section glass">
+                <div class="video-container">
+                    <video id="video" autoplay playsinline></video>
+                    <canvas id="canvas"></canvas>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-primary" id="startCamera">📷 Start Camera</button>
+                    <button class="btn btn-success" id="setRef1">📍 Set Point A</button>
+                    <button class="btn btn-success" id="setRef2">📍 Set Point B</button>
+                    <button class="btn btn-info" id="measureBtn">📏 Measure</button>
+                    <button class="btn btn-danger" id="clearBtn">🗑️ Clear</button>
+                </div>
+
+                <div id="status" class="status"></div>
+
+                <div class="steps-guide">
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-text">Start Camera</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-text">Set Point A & B on reference object</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-text">Click Measure & select points</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side - Results -->
+            <div class="results-section glass">
+                <div class="measure-card">
+                    <div class="measure-label">📏 MEASURED LENGTH</div>
+                    <div class="measure-value" id="measureValue">0.00</div>
+                    <div class="measure-label">centimeters (cm)</div>
+                </div>
+
+                <div class="info-panel">
+                    <label>🔧 Reference Object Size (cm):</label>
+                    <input type="number" id="referenceSize" value="7.32" step="0.01" placeholder="Enter size in cm">
+                    <small style="color: #000; display: block; margin-top: 5px;">💡 Use known object: Credit card (8.5cm), Phone (15cm)</small>
+                </div>
+
+                <div class="info-panel">
+                    <label>📝 Measurement Notes:</label>
+                    <input type="text" id="measureNote" placeholder="Add note about measured object (optional)">
+                </div>
+
+                <div class="action-buttons">
+                    <button id="downloadPDF" class="download-btn">📄 Download Measurement Report (PDF)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contract with Developer Button -->
+        <div class="contract-section">
+            <button id="contractBtn" class="contract-btn">🤝 CONTRACT WITH DEVELOPER</button>
+        </div>
+    </div>
+
+    <!-- Social Modal -->
+    <div id="socialModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>📱 Connect With Developer</h2>
+            <div class="modal-social-buttons">
+                <a href="https://www.facebook.com/md.fahad.hossain.359237" target="_blank" class="social-btn facebook-btn">📘 Facebook</a>
+                <a href="https://www.instagram.com/mdfahadhossain006/" target="_blank" class="social-btn instagram-btn">📷 Instagram</a>
+                <a href="https://github.com/MdFahadHossain006" target="_blank" class="social-btn github-btn">🐙 GitHub</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class PremiumMeasureSystem {
+            constructor() {
+                this.video = document.getElementById('video');
+                this.canvas = document.getElementById('canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.stream = null;
+                
+                this.refPoint1 = null;
+                this.refPoint2 = null;
+                this.measurePoint1 = null;
+                this.measurePoint2 = null;
+                
+                this.referencePixels = 0;
+                this.scaleFactor = 0;
+                this.referenceSizeCm = 7.32;
+                this.currentMeasurement = 0;
+                this.capturedImage = null;
+                
+                this.mode = 'none';
+                
+                this.init();
+            }
+            
+            init() {
+                document.getElementById('startCamera').addEventListener('click', () => this.startCamera());
+                document.getElementById('setRef1').addEventListener('click', () => this.setMode('ref1'));
+                document.getElementById('setRef2').addEventListener('click', () => this.setMode('ref2'));
+                document.getElementById('measureBtn').addEventListener('click', () => this.setMode('measure'));
+                document.getElementById('clearBtn').addEventListener('click', () => this.clearAll());
+                document.getElementById('referenceSize').addEventListener('change', (e) => {
+                    this.referenceSizeCm = parseFloat(e.target.value);
+                    if (this.referencePixels > 0) {
+                        this.updateScaleFactor();
+                    }
+                });
+                document.getElementById('downloadPDF').addEventListener('click', () => this.downloadPDF());
+                
+                // Modal handling
+                const modal = document.getElementById('socialModal');
+                const contractBtn = document.getElementById('contractBtn');
+                const closeBtn = document.getElementsByClassName('close')[0];
+                
+                contractBtn.onclick = () => {
+                    modal.style.display = 'block';
+                }
+                
+                closeBtn.onclick = () => {
+                    modal.style.display = 'none';
+                }
+                
+                window.onclick = (event) => {
+                    if (event.target == modal) {
+                        modal.style.display = 'none';
+                    }
+                }
+                
+                this.canvas.addEventListener('click', (e) => this.handleClick(e));
+            }
+            
+            async startCamera() {
+                try {
+                    if (this.stream) {
+                        this.stream.getTracks().forEach(track => track.stop());
+                    }
+                    
+                    this.stream = await navigator.mediaDevices.getUserMedia({ 
+                        video: { facingMode: 'environment' } 
+                    });
+                    
+                    this.video.srcObject = this.stream;
+                    await this.video.play();
+                    
+                    this.canvas.width = this.video.videoWidth || 640;
+                    this.canvas.height = this.video.videoHeight || 480;
+                    
+                    this.showStatus('✅ Camera ready! Follow the steps to measure.', 'success');
+                    this.startDrawing();
+                } catch (err) {
+                    this.showStatus('❌ Camera access denied. Please allow permissions.', 'error');
+                }
+            }
+            
+            startDrawing() {
+                const draw = () => {
+                    if (this.video.readyState === this.video.HAVE_ENOUGH_DATA) {
+                        if (this.canvas.width !== this.video.videoWidth || this.canvas.height !== this.video.videoHeight) {
+                            this.canvas.width = this.video.videoWidth;
+                            this.canvas.height = this.video.videoHeight;
+                        }
+                        
+                        this.ctx.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height);
+                        this.drawPoints();
+                        
+                        // Capture image for PDF periodically
+                        if (this.video.readyState === this.video.HAVE_ENOUGH_DATA) {
+                            this.capturedImage = this.canvas.toDataURL('image/jpeg', 0.9);
+                        }
+                    }
+                    requestAnimationFrame(draw);
+                };
+                draw();
+            }
+            
+            drawPoints() {
+                // Draw reference points
+                if (this.refPoint1) {
+                    this.drawPoint(this.refPoint1.x, this.refPoint1.y, '#2c3e50', 'A');
+                }
+                if (this.refPoint2) {
+                    this.drawPoint(this.refPoint2.x, this.refPoint2.y, '#2c3e50', 'B');
+                }
+                
+                // Draw measure points
+                if (this.measurePoint1) {
+                    this.drawPoint(this.measurePoint1.x, this.measurePoint1.y, '#c0392b', '1');
+                }
+                if (this.measurePoint2) {
+                    this.drawPoint(this.measurePoint2.x, this.measurePoint2.y, '#c0392b', '2');
+                }
+                
+                // Draw lines and measurements
+                if (this.refPoint1 && this.refPoint2) {
+                    this.drawLine(this.refPoint1, this.refPoint2, '#2c3e50', 3);
+                    const dist = this.getDistance(this.refPoint1, this.refPoint2);
+                    this.drawLabel(this.refPoint1, this.refPoint2, `Ref: ${dist.toFixed(0)}px`, '#2c3e50');
+                }
+                
+                if (this.measurePoint1 && this.measurePoint2) {
+                    this.drawLine(this.measurePoint1, this.measurePoint2, '#c0392b', 3);
+                    const distPx = this.getDistance(this.measurePoint1, this.measurePoint2);
+                    const realDist = this.getRealDistance(distPx);
+                    this.currentMeasurement = realDist;
+                    this.drawLabel(this.measurePoint1, this.measurePoint2, `${realDist.toFixed(2)} cm`, '#c0392b');
+                    document.getElementById('measureValue').innerHTML = realDist.toFixed(2);
+                }
+            }
+            
+            drawPoint(x, y, color, label) {
+                this.ctx.beginPath();
+                this.ctx.arc(x, y, 10, 0, 2 * Math.PI);
+                this.ctx.fillStyle = color;
+                this.ctx.fill();
+                this.ctx.strokeStyle = 'white';
+                this.ctx.lineWidth = 3;
+                this.ctx.stroke();
+                
+                this.ctx.font = 'bold 20px Arial';
+                this.ctx.fillStyle = 'white';
+                this.ctx.shadowBlur = 4;
+                this.ctx.shadowColor = 'black';
+                this.ctx.fillText(label, x + 12, y - 12);
+                this.ctx.shadowBlur = 0;
+            }
+            
+            drawLine(p1, p2, color, width) {
+                this.ctx.beginPath();
+                this.ctx.moveTo(p1.x, p1.y);
+                this.ctx.lineTo(p2.x, p2.y);
+                this.ctx.strokeStyle = color;
+                this.ctx.lineWidth = width;
+                this.ctx.stroke();
+            }
+            
+            drawLabel(p1, p2, text, color) {
+                const midX = (p1.x + p2.x) / 2;
+                const midY = (p1.y + p2.y) / 2;
+                
+                this.ctx.font = 'bold 14px Arial';
+                this.ctx.fillStyle = color;
+                this.ctx.shadowBlur = 3;
+                this.ctx.shadowColor = 'black';
+                const padding = 8;
+                const metrics = this.ctx.measureText(text);
+                const width = metrics.width;
+                
+                this.ctx.fillStyle = 'rgba(0,0,0,0.7)';
+                this.ctx.fillRect(midX - width/2 - padding, midY - 25, width + padding*2, 25);
+                this.ctx.fillStyle = 'white';
+                this.ctx.fillText(text, midX - width/2, midY - 8);
+                this.ctx.shadowBlur = 0;
+            }
+            
+            handleClick(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                const scaleX = this.canvas.width / rect.width;
+                const scaleY = this.canvas.height / rect.height;
+                
+                const x = (e.clientX - rect.left) * scaleX;
+                const y = (e.clientY - rect.top) * scaleY;
+                
+                if (this.mode === 'ref1') {
+                    this.refPoint1 = { x, y };
+                    this.showStatus('✅ Point A set! Now click Point B on the other end.', 'success');
+                    this.mode = 'none';
+                } else if (this.mode === 'ref2') {
+                    if (!this.refPoint1) {
+                        this.showStatus('⚠️ Please set Point A first!', 'error');
+                        this.mode = 'none';
+                        return;
+                    }
+                    this.refPoint2 = { x, y };
+                    this.calculateReference();
+                    this.showStatus('✅ Calibrated! Now you can measure any object.', 'success');
+                    this.mode = 'none';
+                } else if (this.mode === 'measure') {
+                    if (!this.scaleFactor) {
+                        this.showStatus('⚠️ Please calibrate with reference points first!', 'error');
+                        this.mode = 'none';
+                        return;
+                    }
+                    
+                    if (!this.measurePoint1) {
+                        this.measurePoint1 = { x, y };
+                        this.showStatus('📏 Click second point to complete measurement', 'info');
+                    } else {
+                        this.measurePoint2 = { x, y };
+                        this.showStatus('✅ Measurement complete! Download PDF to save results.', 'success');
+                        this.mode = 'none';
+                    }
+                }
+            }
+            
+            calculateReference() {
+                if (this.refPoint1 && this.refPoint2) {
+                    this.referencePixels = this.getDistance(this.refPoint1, this.refPoint2);
+                    this.updateScaleFactor();
+                }
+            }
+            
+            updateScaleFactor() {
+                if (this.referencePixels > 0) {
+                    this.scaleFactor = this.referenceSizeCm / this.referencePixels;
+                    this.showStatus(`🎯 Calibrated! 1px = ${this.scaleFactor.toFixed(4)}cm`, 'success');
+                }
+            }
+            
+            getDistance(p1, p2) {
+                const dx = p1.x - p2.x;
+                const dy = p1.y - p2.y;
+                return Math.sqrt(dx * dx + dy * dy);
+            }
+            
+            getRealDistance(pixels) {
+                return pixels * this.scaleFactor;
+            }
+            
+            setMode(mode) {
+                if (mode === 'measure' && !this.scaleFactor) {
+                    this.showStatus('⚠️ Please calibrate with reference points first!', 'error');
+                    return;
+                }
+                
+                this.mode = mode;
+                if (mode === 'ref1') {
+                    this.showStatus('📍 Click on one end of the reference object', 'info');
+                } else if (mode === 'ref2') {
+                    this.showStatus('📍 Click on the other end of the reference object', 'info');
+                } else if (mode === 'measure') {
+                    this.measurePoint1 = null;
+                    this.measurePoint2 = null;
+                    this.showStatus('🎯 Click two points on the object to measure', 'info');
+                }
+            }
+            
+            clearAll() {
+                this.refPoint1 = null;
+                this.refPoint2 = null;
+                this.measurePoint1 = null;
+                this.measurePoint2 = null;
+                this.referencePixels = 0;
+                this.scaleFactor = 0;
+                this.currentMeasurement = 0;
+                this.mode = 'none';
+                document.getElementById('measureValue').innerHTML = '0.00';
+                this.showStatus('🗑️ All cleared! Start fresh.', 'info');
+            }
+            
+            async downloadPDF() {
+                if (!this.currentMeasurement || this.currentMeasurement === 0) {
+                    this.showStatus('⚠️ Please take a measurement first!', 'error');
+                    return;
+                }
+                
+                this.showStatus('📄 Generating PDF report...', 'info');
+                
+                // Create PDF content
+                const pdfContent = document.createElement('div');
+                pdfContent.className = 'pdf-content';
+                
+                const date = new Date();
+                const formattedDate = date.toLocaleString();
+                const note = document.getElementById('measureNote').value || 'No notes added';
+                const referenceSize = this.referenceSizeCm;
+                const measurement = this.currentMeasurement.toFixed(2);
+                
+                pdfContent.innerHTML = `
+                    <div class="pdf-header">
+                        <h1>📏 Measurement Report</h1>
+                        <p>Generated on: ${formattedDate} by Using Fahad Webpage </p>
+                    </div>
+                    
+                    <div class="pdf-measurement">
+                        <h2>Measurement Result</h2>
+                        <div style="font-size: 48px; font-weight: bold; color: #000; margin: 20px 0;">
+                            ${measurement} <span style="font-size: 24px;">cm</span>
+                        </div>
+                        <p><strong>Note:</strong> ${note}</p>
+                    </div>
+                    
+                    <div class="pdf-image">
+                        <h3>📸 Captured Measurement</h3>
+                        <img src="${this.capturedImage}" alt="Measurement capture" style="max-width: 100%; border-radius: 10px; margin-top: 10px;">
+                    </div>
+                    
+                    <div style="margin-top: 20px; padding: 15px; background: #f0f0f0; border-radius: 10px; border: 1px solid #000;">
+                        <h3>📊 Calibration Details</h3>
+                        <p><strong>Reference Size:</strong> ${referenceSize} cm</p>
+                        <p><strong>Scale Factor:</strong> ${this.scaleFactor.toFixed(4)} cm/pixel</p>
+                    </div>
+                    
+                    <div style="margin-top: 20px; text-align: center; padding-top: 20px; border-top: 2px solid #000;">
+                        <p style="font-weight: bold; color: #000;">This website is created by - MD. FAHAD HOSSAIN</p>
+                        <p style="color: #666; font-size: 12px; margin-top: 10px;">This is an AI-powered measurement tool. Accuracy depends on proper calibration.</p>
+                    </div>
+                `;
+                
+                // PDF Options
+                const opt = {
+                    margin: [0.5, 0.5, 0.5, 0.5],
+                    filename: `Measurement_Report_${Date.now()}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true, logging: false },
+                    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+                };
+                
+                try {
+                    await html2pdf().set(opt).from(pdfContent).save();
+                    this.showStatus('✅ PDF downloaded successfully!', 'success');
+                } catch (error) {
+                    console.error('PDF Error:', error);
+                    this.showStatus('❌ Error generating PDF. Please try again.', 'error');
+                }
+            }
+            
+            showStatus(message, type) {
+                const statusDiv = document.getElementById('status');
+                statusDiv.textContent = message;
+                statusDiv.className = `status ${type}`;
+                
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                }, 4000);
+            }
+        }
+        
+        // Initialize system
+        window.addEventListener('load', () => {
+            new PremiumMeasureSystem();
+        });
+    </script>
+</body>
+</html>
