@@ -68,7 +68,9 @@ LinkedIn : https://www.linkedin.com/in/md-fahad-hossain-095904303/
 
 Instagram : https://www.instagram.com/mdfahadhossain006/
 
-Project Link: https://github.com/MdFahadHossain006/PORTFOLIO
+Facebook : https://www.facebook.com/md.fahad.hossain.359237/
+
+Project Link: https://github.com/MdFahadHossain006/MdFahadHossain006-MEASUREMENT-ANYTHING-BY-CAMERA/blob/main/Measurement.html
 
 
 ## ⚠️ Copyright & License
@@ -85,4 +87,4 @@ modification, or use of this code is strictly prohibited.
 
 **Legal action will be taken against violators.**
 
-[Contact for Licensing](hossainmdfahad67@gmail.com)
+[Contact for Licensing](https://www.facebook.com/md.fahad.hossain.359237/)
